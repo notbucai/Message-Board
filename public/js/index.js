@@ -37,13 +37,13 @@ Message.prototype.init = function(testData){
 
 };
 
-Message.prototype.templListFun = ({title,time,content,name})=>{
+Message.prototype.templListFun = ({title,date,content,name})=>{
 
 
 	const templ_list = `<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
           <div class="d-flex w-100 justify-content-between">
             <h5 class="mb-1">${name}</h5>
-            <small>${time}</small>
+            <small>${new Date(date)}</small>
           </div>
           <p class="mb-1">${content}</p>
         </a>`;
@@ -75,12 +75,25 @@ Message.prototype.templListFun = ({title,time,content,name})=>{
 	];
 
 
-
 	const message = window.msg = new Message("#content_list");
 
+	$.ajax({
+		url: '/list',
+		type: 'GET',
+		dataType: 'json'
+	})
+	.done(function(data) {
+		console.log(data);
 
-	message.dataList = testData;
-
+		message.dataList = data;
+	})
+	.fail(function() {
+		console.log("error");
+	})
+	.always(function() {
+		console.log("complete");
+	});
+	
 
 	$("#form").on('submit', function(event) {
 		event.preventDefault();
@@ -107,6 +120,9 @@ Message.prototype.templListFun = ({title,time,content,name})=>{
         	// console.log(data)
         	console.log(message.dataList)
 
+        	$("input[name=name]").val("");
+        	$("textarea[name=content]").val("");
+
         	message.dataList = [data,...message.dataList];
         })
         .fail(function() {
@@ -116,8 +132,6 @@ Message.prototype.templListFun = ({title,time,content,name})=>{
         	console.log("complete");
         });
         
-     
-
 	});
 	
 	// const templListFun = ({title,time,content,name})=>{
